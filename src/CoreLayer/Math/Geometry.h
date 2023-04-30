@@ -155,6 +155,9 @@ public:
     fflush(stdout);
   }
 
+  // 返回点距离原点的欧式距离
+  float length() const { return xyz.len(); }
+
   //* 友函数/类声明
 public:
   friend class Vector3f;
