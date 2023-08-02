@@ -43,6 +43,8 @@ public:
   std::shared_ptr<Light> light;
   std::shared_ptr<Material> material;
 
+  std::shared_ptr<MediumInterface> mediumInterface;
+
 protected:
   AABB boundingBox;
 };

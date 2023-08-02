@@ -3,6 +3,21 @@
 #include <FunctionLayer/Ray/Ray.h>
 
 class Shape;
+class Medium;
+class Material;
+
+// 介质表面
+struct MediumInterface {
+    MediumInterface(): inside(nullptr), outside(nullptr) {}
+    MediumInterface(std::shared_ptr<Medium> medium): inside(medium), outside(medium) {}
+    MediumInterface(std::shared_ptr<Medium> inside, std::shared_ptr<Medium> outside): 
+        inside(inside), outside(outside) {}
+
+    bool isMediumTransition() const { return inside != outside; }
+
+    std::shared_ptr<Medium> inside; // 内部介质
+    std::shared_ptr<Medium> outside;    // 外部介质
+};
 
 //* Ray与Shape交点处的信息
 struct Intersection {
@@ -17,6 +32,23 @@ struct Intersection {
   //* 光线微分
   float dudx, dvdx, dudy, dvdy;
   Vector3f dpdx, dpdy;
+
+  std::shared_ptr<Material> material; // 交点处的材质信息
+  std::shared_ptr<MediumInterface> mediumInterface; // 交点处的介质信息
+  
+  // 是否为表面散射
+  bool isSurfaceIts() const {
+    return material.get() != nullptr;
+  }
+
+  // 获取交点处dir方向的介质信息
+  std::shared_ptr<Medium> getMedium(const Vector3f dir) const {
+    bool outSide = dot(normal, dir) > 0;
+    if (outSide)
+      return mediumInterface->outside;
+    else
+      return mediumInterface->inside;
+  }
 };
 
 inline void computeRayDifferentials(Intersection *intersection,

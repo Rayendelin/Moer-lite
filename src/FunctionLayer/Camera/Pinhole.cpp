@@ -37,6 +37,8 @@ Ray PinholeCamera::sampleRayDifferentials(const CameraSample &sample,
   ret.directionX = directionX;
   ret.directionY = directionY;
   ret.originX = ret.originY = origin;
+
+  ret.medium = medium;
   return ret;
 }
 

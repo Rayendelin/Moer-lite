@@ -68,6 +68,13 @@ public:
 
   bool isZero() const { return rgb.isZero(); }
 
+  bool isNan() const {
+    for (int i = 0; i < 3; i++)
+      if (rgb[i] != rgb[i])
+        return true;
+    return false;
+  }
+
   void debugPrint() const {
     printf("[rgb](");
     for (int i = 0; i < 3; ++i) {
@@ -75,6 +82,20 @@ public:
     }
     printf(")%c", '\n');
     fflush(stdout);
+  }
+
+  bool debugNegtive() const {
+    for (int i = 0; i < 3; i++)
+      if (rgb[i] < 0)
+        return true;
+    return false;
+  }
+
+  bool debugPositive() const {
+    for (int i = 0; i < 3; i++)
+      if (rgb[i] > 1)
+        return true;
+    return false;
   }
 
 private:

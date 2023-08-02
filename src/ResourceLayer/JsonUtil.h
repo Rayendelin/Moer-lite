@@ -78,3 +78,14 @@ inline void from_json(const Json &json, SpectrumRGB &s) {
   json[1].get_to<float>(s[1]);
   json[2].get_to<float>(s[2]);
 }
+
+// 将一个json对象转换为float数组
+inline void from_json(const Json &json, float*& f, int num) {
+  if (!json.is_array()) {
+    std::cerr << "Json can't parse to float*\n";
+    exit(1);
+  }
+  f = new float[num];
+  for (int i = 0; i < num; i++)
+    json[i].get_to<float>(f[i]);
+}

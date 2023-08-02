@@ -25,6 +25,7 @@ inline void printProgress(float percentage) {
 }
 
 int main(int argc, char **argv) {
+  // 解析场景文件
   const std::string sceneDir = std::string(argv[1]);
   FileUtil::setWorkingDirectory(sceneDir);
   std::string sceneJsonPath = FileUtil::getFullPath("scene.json");
@@ -44,10 +45,13 @@ int main(int argc, char **argv) {
       Vector2f NDC{(float)x / width, (float)y / height};
       Spectrum li(.0f);
       for (int i = 0; i < spp; ++i) {
+        // 采样一条光线
         Ray ray = camera->sampleRayDifferentials(
             CameraSample{sampler->next2D()}, NDC);
+        // 求解渲染方程，获取该光线携带的 radiance 并累加
         li += integrator->li(ray, *scene, sampler);
       }
+      // 将积分器求解的结果放置到图像的相应位置
       camera->film->deposit({x, y}, li / spp);
 
       int finished = x + y * width;

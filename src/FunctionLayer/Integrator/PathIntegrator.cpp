@@ -6,12 +6,14 @@ Spectrum PathIntegrator::li(Ray &ray, const Scene &scene,
                             std::shared_ptr<Sampler> sampler) const {
   Spectrum spectrum(.0f);
   Spectrum throughput(1.f);
+  // 求出与场景的交点信息
   auto intersectionOpt = scene.rayIntersect(ray);
 
   auto depth = 0u;
   bool specularBounce = false;
 
   while (true) {
+    // 如果没有交点，计算无穷远处的发光
     if (!intersectionOpt.has_value()) {
       for (auto light : scene.infiniteLights)
         spectrum += throughput * light->evaluateEmission(ray);
@@ -21,6 +23,7 @@ Spectrum PathIntegrator::li(Ray &ray, const Scene &scene,
     auto intersection = intersectionOpt.value();
     computeRayDifferentials(&intersection, ray);
 
+    // 计算交点处的发光
     if (depth == 0 || specularBounce)
       if (auto light = intersection.shape->light; light) {
         spectrum += light->evaluateEmission(intersection, -ray.direction);
@@ -36,6 +39,7 @@ Spectrum PathIntegrator::li(Ray &ray, const Scene &scene,
       Ray shadowRay{intersection.position + res.direction * 1e-4f,
                     res.direction, 1e-4f, res.distance};
       auto occlude = scene.rayIntersect(shadowRay);
+      // shadowRay与场景中的物体不相交
       if (!occlude.has_value()) {
         auto material = intersection.shape->material;
         auto bsdf = material->computeBSDF(intersection);
@@ -77,6 +81,7 @@ Spectrum PathIntegrator::li(Ray &ray, const Scene &scene,
       break;
 
     throughput *= bsdf_sample_result.weight;
+    // 产生下一条光线
     ray = Ray{intersection.position, bsdf_sample_result.wi};
 
     specularBounce = bsdf_sample_result.type == BSDFType::Specular;

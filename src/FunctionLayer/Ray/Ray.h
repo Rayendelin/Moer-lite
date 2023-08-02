@@ -1,18 +1,22 @@
 #pragma once
 #include <CoreLayer/Math/Math.h>
+#include <memory>
+
+class Medium;
 
 struct Ray {
   Ray() = default;
 
   Ray(Point3f _origin, Vector3f _direction, float _tNear = 1e-4f,
-      float _tFar = 1e10f, float _time = .0f)
+      float _tFar = 1e10f, float _time = .0f, std::shared_ptr<Medium> _medium = nullptr)
       : origin(_origin), direction(normalize(_direction)), tNear(_tNear),
-        tFar(_tFar), time(_time) {}
+        tFar(_tFar), time(_time), medium(_medium) {}
   Ray(Point3f _origin, Point3f _destination, float _time = .0f)
       : origin(_origin), tNear(1e-4f), time(_time) {
     Vector3f o2d = _destination - _origin;
     tFar = o2d.length() - 1e-4f;
     direction = normalize(o2d);
+    medium = nullptr;
   }
 
   Point3f at(float distance) const { return origin + distance * direction; }
@@ -26,4 +30,7 @@ struct Ray {
   bool hasDifferentials = false;
   Point3f originX, originY;
   Vector3f directionX, directionY;
+
+  // 光线起点所在的介质
+  std::shared_ptr<Medium> medium;
 };

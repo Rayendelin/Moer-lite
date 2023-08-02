@@ -7,3 +7,4 @@
 //* 如果要实现采样光谱，请实现与RGB相同的接口
 
 using Spectrum = SpectrumRGB;
+#define nSpectrumSamples 3

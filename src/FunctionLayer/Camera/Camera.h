@@ -1,6 +1,7 @@
 #pragma once
 #include <FunctionLayer/Film/Film.h>
 #include <FunctionLayer/Ray/Ray.h>
+#include <FunctionLayer/Medium/Medium.h>
 #include <ResourceLayer/Factory.h>
 #include <ResourceLayer/JsonUtil.h>
 #include <CoreLayer/Math/Transform.h>
@@ -31,6 +32,8 @@ public:
                                      Vector2f NDC) const = 0;
 
   std::shared_ptr<Film> film = nullptr;
+
+  std::shared_ptr<Medium> medium = nullptr; // 相机所处的介质
 
 protected:
   //* 可视最近距离、最远距离、快门开启时间和结束时间

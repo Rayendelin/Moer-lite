@@ -10,16 +10,35 @@ public:
                      const Vector2f &alpha) const noexcept override {
     // TODO
     // 根据公式即可
-    return 0.f;
+    // 这里假设传入的whLocal已经归一化
+    Vector3f y = {0, 1.0, 0};
+    float cos_theta = dot(whLocal, y);
+    float sin_theta = cross(whLocal, y).length();
+    float tan_theta = sin_theta / cos_theta;
+    return pow(E, -pow(tan_theta, 2) / pow(alpha[0], 2)) / (PI * pow(alpha[0], 2) * pow(cos_theta, 4));
   }
+
   // tips:
   // float getG1(...) {}
+  float getG1(const Vector3f& wLocal, const Vector2f& alpha) const {
+    // theta是光线方向与宏观法线的夹角
+    Vector3f y = {0, 1.0, 0};
+    float tan_theta = cross(wLocal, y).length() / dot(wLocal, y);
+    float a = 1 / (alpha[0] * tan_theta);
+    if (a < 1.6)
+      return (3.535 * a + 2.181 * pow(a, 2)) / (1 + 2.276 * a + 2.577 * pow(a, 2));
+    else
+      return 1;
+  }
+
   virtual float getG(const Vector3f &woLocal, const Vector3f &wiLocal,
                      const Vector2f &alpha) const noexcept override {
     // TODO
     // 根据公式即可
     // tips: return getG1(wo) * getG1(wi);
+    return getG1(woLocal, alpha) * getG1(wiLocal, alpha);
   }
+
   virtual float pdf(const Vector3f &woLocal, const Vector3f &whLocal,
                     const Vector2f &alpha) const noexcept override {
     return getD(whLocal, alpha) * whLocal[1];

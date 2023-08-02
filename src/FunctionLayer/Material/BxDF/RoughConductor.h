@@ -3,6 +3,7 @@
 #include "BSDF.h"
 #include "Warp.h"
 
+// Conductor导体
 class RoughConductorBSDF : public BSDF {
 public:
   RoughConductorBSDF(const Vector3f &_normal, const Vector3f &_tangent,
@@ -18,7 +19,15 @@ public:
     // 3. return albedo * D * G * Fr / (4 * \cos\theta_o);
     // tips: brdf
     // 中分母的\cos\theta_i项被渲染方程中的cos项消去，因此分母只有4*\cos\theta_o
-    return {0.f};
+    Vector3f woLocal = normalize(toLocal(wo));
+    Vector3f wiLocal = normalize(toLocal(wi));
+    Vector3f whLocal = normalize(woLocal + wiLocal);
+    float D = ndf->getD(whLocal, alpha);
+    float G = ndf->getG(woLocal, wiLocal, alpha);
+    float cos_theta = dot(normalize(wi), normalize(normal));
+    Vector3f fr = getFr(cos_theta);
+    float cos_theta_o = dot(normalize(wo), normalize(normal));
+    return albedo * D * G * fr[0] / (4 * cos_theta_o);
   }
 
   virtual BSDFSampleResult sample(const Vector3f &wo,

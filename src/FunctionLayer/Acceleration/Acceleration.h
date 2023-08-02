@@ -26,6 +26,11 @@ public:
       return std::nullopt;
     Intersection its;
     shapes[geomID]->fillIntersection(ray.tFar, primID, u, v, &its);
+    // 填充材质和介质信息
+    if (its.shape != nullptr) {
+      its.material = its.shape->material;
+      its.mediumInterface = its.shape->mediumInterface;
+    }
     return std::make_optional(its);
   }
 

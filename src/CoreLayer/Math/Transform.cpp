@@ -101,3 +101,20 @@ Ray Transform::inverseRay(const Ray &ray) const {
     direction = Vector3f{d[0], d[1], d[2]};
     return {origin,direction,ray.tNear,ray.tFar};
 }
+
+Ray Transform::inverseRayNew(const Ray &ray) const {
+    Point3f origin = ray.origin;
+    Vector3f direction = ray.direction;
+
+    vecmat::vec4f o{origin[0], origin[1], origin[2], 1.f},
+            d{direction[0], direction[1], direction[2], 0.f};
+
+    o = invScale * invRotate * invTranslate * o;
+    d = invScale * invRotate * invTranslate * d;
+
+    o /= o[3];
+    origin = Point3f{o[0], o[1], o[2]};
+    direction = Vector3f{d[0], d[1], d[2]};
+
+    return {origin,direction,ray.tNear,ray.tFar};
+}

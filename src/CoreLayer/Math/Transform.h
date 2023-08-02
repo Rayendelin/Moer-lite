@@ -1,6 +1,8 @@
 #pragma once
 #include "Geometry.h"
 #include "FunctionLayer/Acceleration/AABB.h"
+#include "FunctionLayer/Ray/Ray.h"
+
 //* 三维空间中的旋转、缩放、平移操作均可以用一个4x4的矩阵进行描述，Transform对象描述了如何对一个物体在三维空间上进行变换
 //* Transform是对4维方阵的高层次抽象，只关心旋转、缩放、平移操作
 struct Transform {
@@ -31,6 +33,8 @@ public:
   AABB toWorld(const AABB & box) const;
 
   Ray inverseRay(const Ray & ray) const;
+
+  Ray inverseRayNew(const Ray &ray) const;
 
 public:
   Matrix4f translate, invTranslate;

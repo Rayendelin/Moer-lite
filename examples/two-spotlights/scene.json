@@ -24,7 +24,8 @@
     }
   },
   "integrator" : {
-    "type" : "directSampleLight"
+    "type" : "volPath",
+    "maxDepth" : 10
   },
   "scene" : {
     "shapes" : [

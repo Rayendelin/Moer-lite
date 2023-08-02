@@ -3,6 +3,7 @@
 #include "BSDF.h"
 #include "Warp.h"
 
+// Dielectric电介质
 class RoughDielectricBSDF : public BSDF {
 public:
   RoughDielectricBSDF(const Vector3f &_normal, const Vector3f &_tangent,
@@ -19,7 +20,15 @@ public:
     // tips:
     // 不考虑多重介质，如果光线从真空射入介质，其eta即配置中填写的eta；
     // 如果光线从介质射出，则eta = 1/eta
-    return {0.f};
+    Vector3f woLocal = normalize(toLocal(wo));
+    Vector3f wiLocal = normalize(toLocal(wi));
+    Vector3f whLocal = normalize(woLocal + wiLocal);
+    float D = ndf->getD(whLocal, alpha);
+    float G = ndf->getG(woLocal, wiLocal, alpha);
+    float cos_theta = dot(normalize(wi), normalize(normal));
+    float fr = getFr(eta, cos_theta);
+    float cos_theta_o = dot(normalize(wo), normalize(normal));
+    return albedo * D * G * fr / (4 * cos_theta_o);
   }
 
   virtual BSDFSampleResult sample(const Vector3f &wo,

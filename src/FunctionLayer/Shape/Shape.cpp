@@ -24,8 +24,20 @@ Shape::Shape(const Json &json) {
   if (json.contains("material")) {
     material = Factory::construct_class<Material>(json["material"]);
   } else {
-    material = std::make_shared<MatteMaterial>();
+    material = nullptr; // 默认材质由漫反射改为空
   }
+
+  if (json.contains("medium")) {
+    std::shared_ptr<Medium> inside = nullptr;
+    std::shared_ptr<Medium> outside = nullptr;
+    if (json["medium"].contains("inside"))
+      inside = Factory::construct_class<Medium>(json["medium"]["inside"]);
+    if (json["medium"].contains("outside"))
+      outside = Factory::construct_class<Medium>(json["medium"]["outside"]);
+    mediumInterface = std::make_shared<MediumInterface>(inside, outside);
+  }
+  else
+    mediumInterface = std::make_shared<MediumInterface>();
 }
 
 void UserShapeBound(const RTCBoundsFunctionArguments *args) {
